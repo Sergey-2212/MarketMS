@@ -31,7 +31,7 @@ public class CartServiceTest {
 
     @Test
     public void addToCartTest() {
-        ProductDto testProductDto = new ProductDto(10L, "Juice", BigDecimal.valueOf(250));
+        ProductDto testProductDto = new ProductDto(10L, "Juice", BigDecimal.valueOf(250), "Bakery");
         Mockito.doReturn(testProductDto).when(productServiceIntegration).findProductById(10L);
         cartService.addProduct("null",10L);
         cartService.addProduct("null",10L);

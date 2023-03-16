@@ -22,9 +22,11 @@ angular.module('market').controller('storeController', function ($scope, $http, 
                 }
             }).then(function (response) {
                 console.log(response);
+                $scope.generatePagesList(response.data.totalPages);
+                console.log('response.data.totalPages - ' + response.data.totalPages)
                 $scope.ProductsPage = response.data.content;
                 console.log(JSON.parse(response.data.pageable.pageSize));
-                $scope.generatePagesList($scope.ProductsPage.totalPages);
+                console.log($scope.ProductsPage.totalPages)
             })
 
         };
@@ -100,6 +102,7 @@ angular.module('market').controller('storeController', function ($scope, $http, 
         };
 
         $scope.generatePagesList = function (totalPages) {
+            console.log('generatePagesList started. totalPages -  ' + totalPages)
                 out = [];
                 for (let i = 0; i < totalPages; i++) {
                     out.push(i + 1);
