@@ -19,12 +19,11 @@ public class Cart {
     private List<CartItem> items;
     public Cart() {
         items = new ArrayList<>();
+        totalPrice = BigDecimal.ZERO;
     }
-    public List<CartItem> getItems() {
-        return Collections.unmodifiableList(items);
-    }
+
     public void recalculate() {
-        totalPrice = new BigDecimal(0);
+        totalPrice = BigDecimal.ZERO;
         for (CartItem item : items) {
           totalPrice = totalPrice.add(item.getTotalPrice().setScale(2, RoundingMode.HALF_UP));
         }
@@ -74,7 +73,7 @@ public class Cart {
 
     }
 
-    public void deleteAllItems() {
+    public void clear() {
         items.clear();
         totalPrice = BigDecimal.ZERO;
     }

@@ -2,8 +2,10 @@ angular.module('market').controller('storeController', function ($scope, $http, 
     const cartPath = 'http://localhost:5555/cart/api/v1/cart';
     const corePath = 'http://localhost:5555/core/api/v1';
 
-    $scope.loadProducts = function () {
+    $scope.loadProducts = function (pageNumber = 1) {
+
             console.log("loadProducts")
+
             $http({
                 url: corePath + '/products',
                 method: 'GET',
@@ -12,7 +14,7 @@ angular.module('market').controller('storeController', function ($scope, $http, 
                     // при отсутствии передает null
                     min: $scope.productListFilter ? $scope.productListFilter.min : null,
                     max: $scope.productListFilter ? $scope.productListFilter.max : null,
-                    pageNumber: $scope.productListFilter ? $scope.productListFilter.pageNumber : null,
+                    pageNumber: pageNumber,
                     pageSize: $scope.productListFilter ? $scope.productListFilter.pageSize : null,
                     titleLike: $scope.productListFilter ? $scope.productListFilter.titleLike : null,
                     sortProp: $scope.productListFilter ? $scope.productListFilter.sortProp : null,
@@ -20,14 +22,16 @@ angular.module('market').controller('storeController', function ($scope, $http, 
                 }
             }).then(function (response) {
                 console.log(response);
-                $scope.ProductsList = response.data.content;
+                $scope.ProductsPage = response.data.content;
                 console.log(JSON.parse(response.data.pageable.pageSize));
+                $scope.generatePagesList($scope.ProductsPage.totalPages);
             })
+
         };
 
-    $scope.loadProducts();
 
-     /* Чтобы функцию созданну в js можно было использовать в html, её нужно положить в scope*/
+
+        /* Чтобы функцию созданну в js можно было использовать в html, её нужно положить в scope*/
         $scope.deleteProduct = function (productId) {
            /* alert(studentId); /* выведем в алерте переданный studentId */
             $http({
@@ -84,17 +88,25 @@ angular.module('market').controller('storeController', function ($scope, $http, 
                 alert("Продукт - " + $scope.id + " отредактирован");
             });
         };
-    $scope.addProductToCart = function (productId) {
-        console.log("addProductToCart + " + cartPath + "/" + $localStorage.marchMarketGuestCartId + "/add/" + productId);
-        $http({
-            url: cartPath + "/" + $localStorage.marchMarketGuestCartId + "/add/" + productId,
-            method: 'GET',
+         $scope.addProductToCart = function (productId) {
+            console.log("addProductToCart + " + cartPath + "/" + $localStorage.marchMarketGuestCartId + "/add/" + productId);
+            $http({
+                url: cartPath + "/" + $localStorage.marchMarketGuestCartId + "/add/" + productId,
+                method: 'GET',
 
-        }).then(function (response) {
+            }).then(function (response) {
             console.log(response.data)
-        })
-    };
+            })
+        };
 
+        $scope.generatePagesList = function (totalPages) {
+                out = [];
+                for (let i = 0; i < totalPages; i++) {
+                    out.push(i + 1);
+                }
+                $scope.pagesList = out;
+        }
 
+    $scope.loadProducts();
 
 });

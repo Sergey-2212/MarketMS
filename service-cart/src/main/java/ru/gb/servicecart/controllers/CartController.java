@@ -29,20 +29,26 @@ public class CartController {
     @GetMapping("/generate_id")
     public StringResponse getUuId () {
         log.info("getUuId");
-       return new StringResponse(String.format(prefix + UUID.randomUUID()));
+        return new StringResponse(String.format(prefix + UUID.randomUUID()));
     }
 
     @GetMapping("/{uuId}")
     public CartDto getCart(@RequestHeader(required = false) String username,
                            @PathVariable String uuId) {
 
-        return converter.dtoFromEntity(cartService.getTempCart(checkUsername(username, uuId)));
+        return converter.dtoFromEntity(cartService.getCurrentCart(checkUsername(username, uuId)));
+    }
+    @GetMapping("/{uuId}/merge")
+    public CartDto mergeGuestAndUserCart(@RequestHeader String username,
+                                         @PathVariable String uuId) {
+        log.info("mergeGuestAndUserCart started " + username + "   " + uuId);
+        return converter.dtoFromEntity(cartService.mergeGuestAndUserCart(prefix + username, uuId));
     }
 
     @GetMapping("/{uuId}/add/{id}")
     public void addProductToCartById (@RequestHeader(required = false) String username,
-                                        @PathVariable String uuId,
-                                        @PathVariable Long id) {
+                                      @PathVariable String uuId,
+                                      @PathVariable Long id) {
         log.debug("ID = " + id);
         cartService.addProduct(checkUsername(username, uuId), id);
     }
@@ -69,7 +75,7 @@ public class CartController {
         if(username == null) {
             return uuId;
         } else {
-            return username;
+            return prefix + username;
         }
     }
 }

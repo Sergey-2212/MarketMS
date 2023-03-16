@@ -1,16 +1,19 @@
 package ru.gb.servicecart.services;
 
-import jakarta.annotation.PostConstruct;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import ru.gb.api.ProductDto;
 import ru.gb.servicecart.integrations.ProductServiceIntegration;
 import ru.gb.servicecart.entities.Cart;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
@@ -18,40 +21,62 @@ import java.util.Map;
 public class CartService {
 
     private final ProductServiceIntegration productServiceIntegration;
-
-    private Map<String, Cart> carts;
-
-    @PostConstruct
-    private void init() {
-        carts = new HashMap<>();
-    }
-    public Cart getTempCart (String uuId) {
-        if(carts.containsKey(uuId)) {
-            log.info("getTempCart + true  " + carts.size());
-            return carts.get(uuId);
-        } else {
+    private final RedisTemplate<String, Object> redisTemplate;
+    public Cart getCurrentCart(String cartKey) {
+        if (!redisTemplate.hasKey(cartKey)) {
             Cart cart = new Cart();
-            carts.put(uuId, cart);
-            log.info("getTempCart + false  " + carts.size());
-
-            return cart;
+            redisTemplate.opsForValue().set(cartKey, cart);
         }
+        return (Cart)redisTemplate.opsForValue().get(cartKey);
     }
 
-    public void addProduct(String uuId, Long id) {
-        ProductDto productDto = productServiceIntegration.findProductById(id);
-        carts.get(uuId).add(productDto);
+
+    public void addProduct(String cartKey, Long id) {
+        //Если просто через get достать корзину из редиса, а потом изменять её, изменения в хранилище не отразятся
+        //т.к. транзакции будут не связаны между собой.
+        execute(cartKey, cart -> {
+            ProductDto productDto = productServiceIntegration.findProductById(id);
+            cart.add(productDto);
+        });
     }
 
-    public void changeItemQuantityById(String uuId, Long productId, int delta) {
-        carts.get(uuId).changeItemQuantityById(productId, delta);
+    public void changeItemQuantityById(String cartKey, Long productId, int delta) {
+        execute(cartKey, c -> {
+            c.changeItemQuantityById(productId, delta);
+        });
     }
 
-    public void removeItem(String uuId, Long productId) {
-            carts.get(uuId).deleteItemByID(productId);
+    public void removeItem(String cartKey, Long productId) {
+        execute(cartKey, cart -> {
+            cart.deleteItemByID(productId);
+        });
     }
 
-    public void clear(String uuId) {
-        carts.get(uuId).deleteAllItems();
+    public void clear(String cartKey) {
+        execute(cartKey, Cart::clear);
+    }
+
+    private void execute(String cartId, Consumer<Cart> action) {
+        Cart cart = getCurrentCart(cartId);
+        action.accept(cart);
+        redisTemplate.opsForValue().set(cartId, cart);
+    }
+
+    public Cart mergeGuestAndUserCart(String prefixedUsername, String uuId) {
+        log.info("mergeGuestAndUserCart started");
+        Cart guestCart = getCurrentCart(uuId);
+        log.info("mergeGuestAndUserCart guestCart.totalPrice = " + guestCart.getTotalPrice());
+        if(guestCart.getTotalPrice().equals(BigDecimal.ZERO)) {
+            return (Cart) redisTemplate.opsForValue().get(prefixedUsername);
+        }
+        Cart userCart = getCurrentCart(prefixedUsername);
+        log.info("mergeGuestAndUserCart userCart.totalPrice  before merging = " + userCart.getTotalPrice());
+        userCart.getItems().addAll(guestCart.getItems());
+        userCart.recalculate();
+        redisTemplate.opsForValue().set(uuId, new Cart());
+        redisTemplate.opsForValue().set(prefixedUsername, userCart);
+        log.info("mergeGuestAndUserCart userCart.totalPrice  after merging = " + userCart.getTotalPrice());
+
+        return getCurrentCart(prefixedUsername);
     }
 }

@@ -22,6 +22,10 @@
                 templateUrl: 'orders/orders.html',
                 controller: 'ordersController'
             })
+            .when('/registration', {
+                templateUrl: 'registration/registration.html',
+                controller: 'registrationController'
+            })
             .otherwise({
                 redirectTo: '/'
             });
@@ -58,9 +62,9 @@
 })();
 
 angular.module('market').controller('indexController', function ($rootScope, $scope, $http, $location, $localStorage) {
-    const authPath = 'http://localhost:5555/authentication/auth';
+    const authPath = 'http://localhost:5555/authentication';
     $scope.tryToAuth = function () {
-        $http.post(authPath, $scope.user)
+        $http.post(authPath + '/auth', $scope.user)
             .then(function successCallback(response) {
                 if (response.data.token) {
                     $http.defaults.headers.common.Authorization = 'Bearer ' + response.data.token;
@@ -68,7 +72,7 @@ angular.module('market').controller('indexController', function ($rootScope, $sc
 
                     $scope.user.username = null;
                     $scope.user.password = null;
-
+                    $rootScope.mergeCart();
                     $location.path('/');
                     console.log('location -' + $location.path)
                 }

@@ -13,8 +13,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<AppError> catchUsernameNotFoundException (UsernameNotFoundException e) {
-        log.error("GlobalExceptionHandler " + e.getMessage());
+        log.error("catchUsernameNotFoundException " + e.getMessage());
         return new ResponseEntity<>(new AppError(HttpStatus.NOT_FOUND.value(), e.getMessage()), HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler
+    public ResponseEntity<AppError> catchUserIsAlreadyExistException (UserIsAlreadyExistException e) {
+        log.error("catchUserIsAlreadyExistException " + e.getMessage());
+        return new ResponseEntity<>(new AppError(HttpStatus.NON_AUTHORITATIVE_INFORMATION.value(), e.getMessage()), HttpStatus.NON_AUTHORITATIVE_INFORMATION);
+    }
+    @ExceptionHandler
+    public ResponseEntity<AppError> catchPasswordsDontMatchException (PasswordsDontMatchException e) {
+        log.error("catchPasswordsDontMatchException " + e.getMessage());
+        return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
 
