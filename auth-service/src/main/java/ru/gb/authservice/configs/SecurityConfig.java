@@ -15,14 +15,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 
 @Configuration
-public class SecurityConfig {
+public class
+SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
 //                .requestMatchers("/auth_check")
 //                .authenticated()
-//               .requestMatchers("/api/v1/order").authenticated().anyRequest().permitAll()
+//                .requestMatchers("/api/v1/order").authenticated().anyRequest().permitAll()
                 // .anyRequest().permitAll()
 
                 //выключает сессионную безопасность

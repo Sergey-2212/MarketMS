@@ -52,9 +52,5 @@ public class  ProductController {
                        .orElseThrow(() -> new NotFoundException(String.format("Product not found by id = %s",id))));
     }
 
-    @PostMapping
-    public ProductDto createNewProduct(@RequestBody ProductDto productDto) {
-        Product product = productService.createNewProduct(productDto);
-        return productConverter.entityToDtoConverter(product);
-    }
+
 }

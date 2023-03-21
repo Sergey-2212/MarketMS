@@ -1,31 +1,18 @@
 version: '1'
 
 services:
-
-#  postgres:
-#    image: postgres:9.6
-#    domainname: postgres
-#    ports:
-#      - 5434:5432
+  postgres:
+    image: 'postgres:11.1'
+    domainname: market
+    ports:
+      - "5434:5432"
 #      # -- проброс порта наверх "Пароль снаружи:пароль внутри"
 #      # -- environment - не общая для всех контейнеров переменная. Переменные среды отличаются т.е. в другом образе они могут быть иными
 #    #Эти переменные придумывают создатели образов для доккера. В документации должно быть описание всех возможных настроек
-#    environment:
-#      - POSTGRES_USER=postgres
-#      - POSTGRES_PASSWORD=postgres
-#    # -- Здесь тестируем подключение
-  postgres:
-    image: postgres
-    restart: always
     environment:
-      POSTGRES_USERNAME: postgresql
-      POSTGRES_PASSWORD: postgresql
-
-    adminer:
-      image: adminer
-      restart: always
-      ports:
-        - 5434:5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+#    # -- Здесь тестируем подключение
     healthcheck:
       test: ["CMD", "pg_isready", "-q", "-U", "postgres"]
       interval: 5s
@@ -33,7 +20,7 @@ services:
       retries: 2
 
   flyway:
-    image: boxfuse/flyway
+    image: 'boxfuse/flyway'
     command: -url=jdbc:postgresql://postgres:5432/postgres -schemas=public -user=postgres -password=postgres -connectRetries=30 migrate
     # -- volumes - это маппинг локального источника данных flyway с источником в доккере
     # -- в примере к уроку инит файлы лежали в корне проекта в папке flyway (- ./flyway:/flyway/sql) у меня же лежит в service core
@@ -43,16 +30,16 @@ services:
     depends_on:
       - postgres
 
-  flyway2:
-    image: boxfuse/flyway
-    command: -url=jdbc:postgresql://postgres:5432/postgres -schemas=public -user=postgres -password=postgres -connectRetries=30 migrate
-    # -- volumes - это маппинг локального источника данных flyway с источником в доккере
-    # -- в примере к уроку инит файлы лежали в корне проекта в папке flyway (- ./flyway:/flyway/sql) у меня же лежит в service core
-    volumes:
-      - ./auth-service/src/main/resources/db/migration:/flyway/sql
-    # -- Указали зависимость одного контейнера от другоги. Важно для корректной псследовательности раскатки при запуске
-    depends_on:
-      - postgres
+#  flyway2:
+#    image: boxfuse/flyway
+#    command: -url=jdbc:postgresql://postgres:5432/postgres -schemas=public -user=postgres -password=postgres -connectRetries=30 migrate
+#    # -- volumes - это маппинг локального источника данных flyway с источником в доккере
+#    # -- в примере к уроку инит файлы лежали в корне проекта в папке flyway (- ./flyway:/flyway/sql) у меня же лежит в service core
+#    volumes:
+#      - ./auth-service/src/main/resources/db/migration:/flyway/sql
+#    # -- Указали зависимость одного контейнера от другоги. Важно для корректной псследовательности раскатки при запуске
+#    depends_on:
+#      - postgres
 
 
   redis:

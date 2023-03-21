@@ -11,6 +11,7 @@ import ru.gb.servicecore.converters.ProductConverter;
 import ru.gb.servicecore.entities.Product;
 import ru.gb.servicecore.repositories.ProductRepository;
 import ru.gb.servicecore.repositories.specifications.ProductSpecifications;
+import ru.gb.servicecore.validators.EntityValidator;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +40,8 @@ public class ProductService {
     }
 
     public Product createNewProduct(ProductDto productDto) {
-      return productRepository.save(converter.dtoToEntityConverter(productDto));
+        productDto.setId(null);
+        return productRepository.save(converter.dtoToEntityConverter(productDto));
     }
     //Lesson9 00:51
     public Specification<Product> createSpecByFilters(Integer minPrice, Integer maxPrice, String title) {
@@ -57,5 +59,13 @@ public class ProductService {
         }
 
         return spec;
+    }
+
+    public void updateProduct(Product product) {
+        productRepository.save(product);
+    }
+
+    public void remove(Long id) {
+       productRepository.deleteById(id);
     }
 }

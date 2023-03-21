@@ -26,7 +26,7 @@
                     <a class="nav-link" href="#!/">March Market</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#!/store">Каталог товаров</a>
+                    <a class="nav-link" href="#!/store">Products list</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#!/cart">
@@ -34,11 +34,13 @@
                     </a>
                 </li>
                 <li class="nav-item" ng-show="isUserLoggedIn()">
-                    <a class="nav-link" href="#!/orders">Мои заказы</a>
+                    <a class="nav-link" href="#!/orders">My orders</a>
                 </li>
                 <li class="nav-item" ng-show="!isUserLoggedIn()">
-
-                    <a class="nav-link" href="#!/registration">Регистрация</a>
+                    <a class="nav-link" href="#!/registration">Registration</a>
+                </li>
+                <li class="nav-item" ng-show="isAdminLoggedIn()">
+                    <a class="nav-link" href="#!/admin">Administrator</a>
                 </li>
                 <li class="nav-item" ng-show="!isUserLoggedIn()">
                     <form class="align-middle" ng-submit="tryToAuth()">
@@ -50,8 +52,7 @@
                                    aria-describedby="inputGroup-sizing-sm" style="margin-left: 10px;">
 
                             <button id="navLoginSubmit" class="btn btn-outline-warning btn-sm"
-                                    style="margin-left: 10px;" type="submit">Войти
-                            </button>
+                                    style="margin-left: 10px;" type="submit">Sign in</button>
                         </div>
                     </form>
                 </li>
@@ -70,6 +71,7 @@
     <script src="orders/orders.js"></script>
     <script src="welcome/welcome.js"></script>
     <script src="registration/registration.js"></script>
+    <script src="admin/admin.js"></script>
 </div>
 
 

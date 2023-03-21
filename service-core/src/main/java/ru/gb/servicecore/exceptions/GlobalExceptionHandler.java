@@ -21,5 +21,10 @@ public class GlobalExceptionHandler {
         log.error(e.getMessage());
         return new ResponseEntity<>(new AppError(HttpStatus.BAD_REQUEST.value(), e.getMessage()), HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler
+    public ResponseEntity<AppError> catchUserIsNotAdminException (UserIsNotAdminException e) {
+        log.error(e.getMessage());
+        return new ResponseEntity<>(new AppError(HttpStatus.FORBIDDEN.value(), e.getMessage()), HttpStatus.FORBIDDEN);
+    }
 
 }

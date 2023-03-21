@@ -26,6 +26,10 @@
                 templateUrl: 'registration/registration.html',
                 controller: 'registrationController'
             })
+            .when('/admin', {
+                templateUrl: 'admin/admin.html',
+                controller: 'administrationController'
+            })
             .otherwise({
                 redirectTo: '/'
             });
@@ -69,16 +73,28 @@ angular.module('market').controller('indexController', function ($rootScope, $sc
                 if (response.data.token) {
                     $http.defaults.headers.common.Authorization = 'Bearer ' + response.data.token;
                     $localStorage.marchMarketUser = {username: $scope.user.username, token: response.data.token};
-
+                    $scope.checkAdminAccess();
                     $scope.user.username = null;
                     $scope.user.password = null;
                     $rootScope.mergeCart();
                     $location.path('/');
-                    console.log('location -' + $location.path)
                 }
             }, function errorCallback(response) {
             });
     };
+
+    $scope.checkAdminAccess = function () {
+        $scope.jwt = $localStorage.marchMarketUser.token;
+        $scope.jwtData = $scope.jwt.split('.')[1]
+        console.log('jwtData: ' + $scope.jwtData)
+        $scope.decodedJwtJsonData = window.atob($scope.jwtData)
+        console.log('decodedJwtJsonData: ' + $scope.decodedJwtJsonData)
+        $scope.decodedJwtData = JSON.parse($scope.decodedJwtJsonData)
+        console.log('decodedJwtData: ' + $scope.decodedJwtData.roles)
+        $rootScope.isAdmin = $scope.decodedJwtData.roles == 'ROLE_ADMIN';
+        console.log('Is admin: ' + $scope.isAdmin)
+        $localStorage.marchMarketUser.isAdmin = $rootScope.isAdmin;
+    }
 
     $scope.tryToLogout = function () {
         $scope.clearUser();
@@ -97,6 +113,14 @@ angular.module('market').controller('indexController', function ($rootScope, $sc
             return false;
         }
     };
+
+    $rootScope.isAdminLoggedIn = function () {
+        if($localStorage.marchMarketUser) {
+            return $localStorage.marchMarketUser.isAdmin;
+        } else {
+            return false;
+        }
+    }
 });
 
 

@@ -1,6 +1,7 @@
 package ru.gb.gatewayservice;
 
 import io.jsonwebtoken.Claims;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
@@ -10,7 +11,7 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-
+@Slf4j
 @Component
 public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Config> {
     //конструкция выше в угловых скобках позволяет прописывать этот фильтр в yml файл, включать в цепочку действий со входящими запросами
@@ -27,7 +28,7 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
 
-            if (request.getHeaders().containsKey("username")) {
+            if (request.getHeaders().containsKey("username") || request.getHeaders().containsKey("role")) {
                 return this.onError(exchange, "Invalid header username", HttpStatus.BAD_REQUEST);
             }
 
@@ -69,9 +70,13 @@ public class JwtAuthFilter extends AbstractGatewayFilterFactory<JwtAuthFilter.Co
 
     private void populateRequestWithHeaders(ServerWebExchange exchange, String token) {
         Claims claims = jwtUtil.getAllClaimsFromToken(token);
+        log.info("claims.getSubject() - " + claims.getSubject());
+        log.info("claims.toString() - " + claims.toString());
+        log.info("Role - " + claims.get("roles"));
         exchange.getRequest().mutate()
                 .header("username", claims.getSubject())
-                .header("role", String.valueOf(claims.get("role")))
+                .header("role", String.valueOf(claims.get("roles")))
                 .build();
+
     }
 }

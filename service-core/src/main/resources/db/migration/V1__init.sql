@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS products
  title VARCHAR(255),
  price numeric(8, 2),
  category_id BIGINT NOT NULL default 1,
- date_of_adding TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+ date_of_adding TIMESTAMP DEFAULT (CURRENT_TIMESTAMP),
  PRIMARY KEY (id),
  FOREIGN KEY (category_id) REFERENCES categories(id));
 

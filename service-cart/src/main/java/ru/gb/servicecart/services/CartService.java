@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import ru.gb.api.ProductDto;
+import ru.gb.servicecart.entities.CartItem;
 import ru.gb.servicecart.integrations.ProductServiceIntegration;
 import ru.gb.servicecart.entities.Cart;
 
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 @Service
@@ -34,10 +36,21 @@ public class CartService {
     public void addProduct(String cartKey, Long id) {
         //Если просто через get достать корзину из редиса, а потом изменять её, изменения в хранилище не отразятся
         //т.к. транзакции будут не связаны между собой.
+        Cart tempCart = getCurrentCart(cartKey);
+        for (CartItem item : tempCart.getItems()) {
+            if(Objects.equals(item.getProductId(), id)) {
+                execute(cartKey, cart -> {
+                    cart.changeItemQuantityById(id, 1);
+                });
+                return;
+            }
+        }
+
         execute(cartKey, cart -> {
             ProductDto productDto = productServiceIntegration.findProductById(id);
-            cart.add(productDto);
+            cart.addNewProduct(productDto);
         });
+
     }
 
     public void changeItemQuantityById(String cartKey, Long productId, int delta) {
