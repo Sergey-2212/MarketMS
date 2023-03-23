@@ -31,14 +31,14 @@ public class CartServiceTest {
 
     @Test
     public void addToCartTest() {
-        ProductDto testProductDto = new ProductDto(10L, "Juice", BigDecimal.valueOf(250));
+        ProductDto testProductDto = new ProductDto(10L, "Juice", BigDecimal.valueOf(250), "Bakery");
         Mockito.doReturn(testProductDto).when(productServiceIntegration).findProductById(10L);
         cartService.addProduct("null",10L);
         cartService.addProduct("null",10L);
 
 
-        Assertions.assertEquals(1, cartService.getTempCart("null").getItems().size());
-        CartItem cartItem = cartService.getTempCart("null").getItems().stream().filter(p -> p.getProductId().equals(10L)).findFirst().orElseThrow(() -> new NotFoundException("TestItem not found"));
+        Assertions.assertEquals(1, cartService.getCurrentCart("null").getItems().size());
+        CartItem cartItem = cartService.getCurrentCart("null").getItems().stream().filter(p -> p.getProductId().equals(10L)).findFirst().orElseThrow(() -> new NotFoundException("TestItem not found"));
         Assertions.assertEquals(BigDecimal.valueOf(500.00).setScale(2, RoundingMode.HALF_UP), cartItem.getTotalPrice());
     }
 }

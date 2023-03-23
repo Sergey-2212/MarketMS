@@ -19,24 +19,17 @@ public class Cart {
     private List<CartItem> items;
     public Cart() {
         items = new ArrayList<>();
+        totalPrice = BigDecimal.ZERO;
     }
-    public List<CartItem> getItems() {
-        return Collections.unmodifiableList(items);
-    }
+
     public void recalculate() {
-        totalPrice = new BigDecimal(0);
+        totalPrice = BigDecimal.ZERO;
         for (CartItem item : items) {
           totalPrice = totalPrice.add(item.getTotalPrice().setScale(2, RoundingMode.HALF_UP));
         }
     }
-    public void add (ProductDto productDto) {
-        for (CartItem item : items) {
-            if(Objects.equals(item.getProductId(), productDto.getId())) {
-                item.changeQuantity(1);
-                recalculate();
-                return;
-            }
-        }
+
+    public void addNewProduct (ProductDto productDto) {
         items.add(new CartItem(productDto.getId(),
                 productDto.getTitle(),
                 productDto.getPrice(),
@@ -44,6 +37,17 @@ public class Cart {
                 1));
         recalculate();
     }
+
+//    public void add (ProductDto productDto) {
+//        for (CartItem item : items) {
+//            if(Objects.equals(item.getProductId(), productDto.getId())) {
+//                item.changeQuantity(1);
+//                recalculate();
+//                return;
+//            }
+//        }
+
+//    }
     public void changeItemQuantityById (Long productId, Integer delta) {
         for (CartItem item: items) {
             if(item.getProductId().equals(productId)) {
@@ -74,7 +78,7 @@ public class Cart {
 
     }
 
-    public void deleteAllItems() {
+    public void clear() {
         items.clear();
         totalPrice = BigDecimal.ZERO;
     }

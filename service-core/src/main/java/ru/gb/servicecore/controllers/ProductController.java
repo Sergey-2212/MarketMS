@@ -14,7 +14,7 @@ import ru.gb.servicecore.converters.ProductConverter;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/products")
-public class ProductController {
+public class  ProductController {
 
     private final ProductService productService;
     private final ProductConverter productConverter;
@@ -29,7 +29,7 @@ public class ProductController {
     public Page<ProductDto> getAllProductsBetween(@RequestParam(defaultValue = "0") Integer min,
                                                   @RequestParam(required = false) Integer max,
                                                   @RequestParam(required = false) Integer pageNumber,
-                                                  @RequestParam(required = false, defaultValue = "50") Integer pageSize,
+                                                  @RequestParam(required = false, defaultValue = "10") Integer pageSize,
                                                   @RequestParam(required = false) String titleLike,
                                                   @RequestParam(required = false, defaultValue = "id") String sortProp) {
        log.info("getAllProductsBetween");
@@ -52,9 +52,5 @@ public class ProductController {
                        .orElseThrow(() -> new NotFoundException(String.format("Product not found by id = %s",id))));
     }
 
-    @PostMapping
-    public ProductDto createNewProduct(@RequestBody ProductDto productDto) {
-        Product product = productService.createNewProduct(productDto);
-        return productConverter.entityToDtoConverter(product);
-    }
+
 }

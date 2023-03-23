@@ -1,6 +1,6 @@
 //Контроллер cartController подключится к модулю market. Если указать в имени angular.module('market', ['ngStorage'])
 //то создастся новый модуль. Создание модуля мы выполняем в файле index.js, а здесь подключаемся к уже созданному.
-angular.module('market').controller('cartController', function ($scope, $http, $localStorage) {
+angular.module('market').controller('cartController', function ($rootScope, $scope, $http, $localStorage) {
     const cartPath = 'http://localhost:5555/cart/api/v1/cart';
     const corePath = 'http://localhost:5555/core/api/v1';
 
@@ -15,6 +15,17 @@ $scope.loadCart = function () {
                 $scope.isCartEmpty();
             })
     };
+
+$rootScope.mergeCart = function () {
+    console.log("mergeCart");
+    $http.get(cartPath + "/" + $localStorage.marchMarketGuestCartId + '/merge')
+        .then(function (response) {
+            console.log(response.data);
+            $scope.cart = response.data;
+            $scope.isCartEmpty();
+        })
+
+}
 
     $scope.isCartEmpty = function () {
         console.log($scope.cart.totalPrice)
@@ -68,7 +79,7 @@ $scope.loadCart = function () {
             console.log($scope.cart.items);
 
             if($scope.isUserLoggedIn()) {
-                $http.post(corePath + "/order")
+                $http.post(corePath + "/orders")
                     .then(function successCallback(response){
                         $scope.loadCart();
                         alert("Номер заказа - " + response.data);

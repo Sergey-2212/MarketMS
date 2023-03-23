@@ -28,4 +28,9 @@ public class Product {
     @Column(name = "date_of_adding")
     @CreationTimestamp
     private Timestamp date_of_adding;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "category_id")
+    private Category category;
+
 }

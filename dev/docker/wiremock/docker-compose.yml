@@ -1,0 +1,15 @@
+version: '2'
+
+services:
+  wiremock:
+    image: rodolpheche/wiremock
+    container_name: wiremock-service
+    ports:
+      - "8033:8080"
+    volumes:
+      - ./stubs/__files/:/home/wiremock/__files
+      - ./stubs/mappings/:/home/wiremock/mappings
+    command:
+      - -verbose
+      - -global-response-templating
+

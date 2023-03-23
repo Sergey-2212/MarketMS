@@ -1,0 +1,26 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/market-cart/api/v1/cart/0"
+      },
+      "response": {
+        "status": "200",
+        "bodyFileName": "cart-example.json",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/market-cart/api/v1/cart/0/clear"
+      },
+      "response": {
+        "status": "200"
+      }
+    }
+  ]
+}
