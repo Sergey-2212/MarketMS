@@ -13,6 +13,23 @@ public class OrderDto {
     private LocalDateTime ordered_at;
     private List<OrderItemDto> items;
 
+    public OrderDto() {
+    }
+
+    public OrderDto(Builder builder) {
+        setId(builder.id);
+        setUsername(builder.username);
+        setAddress(builder.address);
+        setPhoneNumber(builder.phoneNumber);
+        setTotalPrice(builder.totalPrice);
+        setOrdered_at(builder.ordered_at);
+        setItems(builder.items);
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
 
     public LocalDateTime getOrdered_at() {
         return ordered_at;
@@ -68,6 +85,59 @@ public class OrderDto {
 
     public void setItems(List<OrderItemDto> items) {
         this.items = items;
+    }
+
+
+    public static final class Builder {
+        private Long id;
+        private String username;
+        private String address;
+        private String phoneNumber;
+        private BigDecimal totalPrice;
+        private LocalDateTime ordered_at;
+        private List<OrderItemDto> items;
+
+        private Builder() {
+        }
+
+        public Builder withId(Long val) {
+            id = val;
+            return this;
+        }
+
+        public Builder withUsername(String val) {
+            username = val;
+            return this;
+        }
+
+        public Builder withAddress(String val) {
+            address = val;
+            return this;
+        }
+
+        public Builder withPhoneNumber(String val) {
+            phoneNumber = val;
+            return this;
+        }
+
+        public Builder withTotalPrice(BigDecimal val) {
+            totalPrice = val;
+            return this;
+        }
+
+        public Builder withOrdered_at(LocalDateTime val) {
+            ordered_at = val;
+            return this;
+        }
+
+        public Builder withItems(List<OrderItemDto> val) {
+            items = val;
+            return this;
+        }
+
+        public OrderDto build() {
+            return new OrderDto(this);
+        }
     }
 }
 
